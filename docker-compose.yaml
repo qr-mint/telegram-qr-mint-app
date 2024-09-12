@@ -1,0 +1,27 @@
+services:
+  qrmint-front:
+    build: ${FRONT_PATH}
+    hostname: qrmint-front
+    container_name: qrmint-front
+    restart: "always"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+    volumes:
+      - ${FRONT_PATH}/nginx/logs:/var/log/nginx
+    expose:
+      - ${FRONT_PORT}
+    networks:
+      - qrmint
+    labels:
+      - "traefik.docker.network=qrmint-proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.qrmint-front.rule=Host(`$FRONT_HOSTNAME`)"
+      - "traefik.http.routers.qrmint-front.entrypoints=web,websecure"
+      - "traefik.http.routers.qrmint-front.tls.certresolver=default"
+networks:
+  qrmint:
+    driver: bridge
+    name: qrmint-proxy
